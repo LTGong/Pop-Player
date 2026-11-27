@@ -16,7 +16,8 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
 #screen{position:relative;width:100%;aspect-ratio:16/9;max-height:calc(100vh - 150px);background:#000;border-radius:10px;overflow:hidden;margin:0 auto}
 #yt,#yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 #shield{position:absolute;inset:0;z-index:2}
-#shield.ad{clip-path:polygon(0 0,100% 0,100% 62%,62% 62%,62% 100%,0 100%)}
+#shield.ad{bottom:38%}
+#shield.ad::after{content:'';position:absolute;top:100%;left:0;width:62%;height:61.3%}
 #veil{position:absolute;inset:0;z-index:3;display:none;align-items:center;justify-content:center;flex-direction:column;
   gap:18px;background:rgba(10,9,8,.72);text-align:center;padding:20px;pointer-events:none}
 #veil.on{display:flex}
@@ -24,6 +25,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
 #veil .small{font-size:clamp(18px,2.2vw,26px);color:var(--dim)}
 #veil svg{width:clamp(70px,10vw,130px);height:auto}
 #prog{height:8px;background:#2c2822;border-radius:4px;overflow:hidden}
+#ver{position:fixed;left:4px;bottom:2px;font-size:11px;color:#4a443b;pointer-events:none}
 #prog i{display:block;height:100%;width:0;background:var(--dim);transition:width 1s linear}
 #info{display:flex;align-items:center;gap:14px;margin-top:6px}
 #info>div{flex:1}
@@ -59,7 +61,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
       <div id="shield"></div>
       <div id="veil"><div class="big" id="vbig"></div><div class="small" id="vsmall"></div></div>
     </div>
-    <div id="prog"><i></i></div>
+    <div id="prog"><i></i></div><div id="ver">v5</div>
     <div id="info">
       <div><div id="chname">Pop TV</div><div id="vtitle">Getting ready…</div></div>
       <button id="next" type="button">Next
@@ -215,15 +217,16 @@ setInterval(()=>{
   $('prog').firstChild.style.width=dur?Math.min(100,t/dur*100)+'%':'0';
   if(userPaused){lastMove=Date.now();return}
   /* During an ad YouTube reports "unstarted" while the clock (the ad's) runs. Open the Skip corner then. */
-  const ad=state===-1&&Math.abs(t-lastT)>0.2;
+  const moving=Math.abs(t-lastT)>0.2;
+  const ad=(state===-1&&moving)||(state===1&&!moving&&everPlayed)||(state===3&&Date.now()-lastMove>4000);
   if(ad!==adLikely)setAd(ad);
   if(ad)$('prog').firstChild.style.width='0';
-  if(Math.abs(t-lastT)>0.2){lastT=t;lastMove=Date.now();stuck=0;if(state===1||ad)unveil();
+  if(moving){lastT=t;lastMove=Date.now();stuck=0;if(state===1||ad)unveil();
     if(Math.random()<0.2)remember();return}
   const idle=Date.now()-lastMove;
   if(!everPlayed&&idle>4000&&state!==3){veil('Tap here to start','',PLAY);return}  // tablet blocked autoplay with sound
   if(state===2&&idle>2000){resume();return}                          // paused by something other than Pop
-  if(idle>25000){                                                     // frozen: retry once, then move on
+  if(idle>(adLikely?90000:25000)){                                                     // frozen: retry once, then move on
     lastMove=Date.now();stuck++;
     if(stuck===1&&item)play(item,t);else advance();
   }
