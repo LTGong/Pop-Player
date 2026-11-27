@@ -10,6 +10,8 @@
 //              link like https://www.youtube.com/watch?v=hUhisi2FBuw
 //              Write each one in quotes, followed by a comma.
 //              Anything after // on a line is a note for you; Pop never sees it.
+//    sleepImage (optional) — a picture (web address) to show when Pop pauses.
+//              Without one, Pop TV draws a night scene with the channel's icon.
 //    alsoFrom (optional) — YouTube channel IDs (start with "UC").
 //              After every few hand-picked videos, Pop TV plays a recent
 //              full-length upload from one of these channels (never Shorts).
@@ -38,9 +40,7 @@ window.POP_CHANNELS = [
       "tP2APPPDtjc", // Processors, splitters, saws and tractors
       "nVOnuqsIQYk", // This log splitter pays for itself
       "YBncu56U6hI", // Testing 4 different splitters
-      "J8V5gP7BRe0", // Making a hydraulic log splitter
       "l3ZZjhsM8g0", // DIY splitter from scrap metal
-      "DOzNrAq6jY0", // Screw log splitter build
     ],
   },
   {
@@ -109,7 +109,7 @@ window.POP_CHANNELS = [
     ],
   },
   {
-    name: "Inn stories",
+    name: "Pioneer stories",
     icon: "book",
     color: "#7a3b3b",
     // Pop watches this genre rather than one channel. Add stories you spot him

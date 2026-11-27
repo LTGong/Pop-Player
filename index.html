@@ -13,7 +13,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
   font-family:Roboto,"Amazon Ember","Helvetica Neue",Arial,sans-serif;-webkit-user-select:none;user-select:none}
 #app{display:grid;grid-template-columns:minmax(0,62fr) minmax(0,38fr);height:100%;gap:14px;padding:14px}
 #left{display:flex;flex-direction:column;gap:10px;justify-content:center}
-#screen{position:relative;width:100%;aspect-ratio:16/9;max-height:calc(100vh - 150px);background:#000;border-radius:10px;overflow:hidden;margin:0 auto}
+#screen{position:relative;width:100%;aspect-ratio:16/9;max-height:calc(100vh - 250px);background:#000;border-radius:10px;overflow:hidden;margin:0 auto}
 #yt,#yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 #shield{position:absolute;inset:0;z-index:2}
 #shield.ad{bottom:38%}
@@ -27,16 +27,33 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
 #prog{height:8px;background:#2c2822;border-radius:4px;overflow:hidden}
 #ver{position:fixed;left:6px;bottom:4px;font-size:13px;color:#8a8070;pointer-events:none;white-space:pre;z-index:9}
 #prog i{display:block;height:100%;width:0;background:var(--dim);transition:width 1s linear}
-#info{display:flex;align-items:center;gap:14px;margin-top:6px}
-#info>div{flex:1}
-#chname{font-size:clamp(22px,2.6vw,34px);font-weight:800;line-height:1.1}
-#vtitle{font-size:clamp(16px,1.8vw,22px);color:var(--dim);line-height:1.25;margin-top:4px;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-#next{flex:none;font:inherit;font-size:clamp(20px,2.2vw,28px);font-weight:800;color:var(--bg);background:var(--ink);
-  border:0;border-radius:14px;padding:16px 22px;min-height:72px;display:flex;align-items:center;gap:10px}
-#next svg{width:34px;height:34px}
-#next:active{transform:scale(.96)}
-#next.off{opacity:.35}
+#info{margin-top:2px}
+#chname{font-size:clamp(22px,2.6vw,32px);font-weight:800;line-height:1.1}
+#vtitle{font-size:clamp(16px,1.7vw,21px);color:var(--dim);line-height:1.25;margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#controls{display:flex;gap:8px;align-items:stretch}
+.ctl{flex:1;font:inherit;font-size:clamp(14px,1.4vw,18px);font-weight:700;color:var(--bg);background:var(--ink);border:0;border-radius:14px;
+  padding:8px 4px 6px;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.ctl svg{width:clamp(30px,3.2vw,42px);height:auto;fill:currentColor}
+.ctl:active{transform:scale(.96)}
+.ctl.off{opacity:.3}
+#pause{flex:1.3;background:var(--ring)}
+#vol{flex:3;display:flex;gap:4px;background:#2c2822;border-radius:16px;padding:4px;margin-left:8px}
+#vol .ctl{background:transparent;color:var(--dim);min-height:76px}
+#vol .ctl.sel{background:var(--ink);color:var(--bg)}
+#sleep{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;flex-direction:column;
+  padding-top:22vh;background:#070914;cursor:pointer}
+#sleep.on{display:flex}
+#sleep>svg,#sleep>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#sleep .msg{position:relative;font-size:clamp(20px,2.4vw,30px);color:#e9e2d0;margin-bottom:18px;text-shadow:0 2px 6px #000}
+#resume{position:relative;font:inherit;font-size:clamp(34px,4.4vw,56px);font-weight:800;color:#14120f;background:var(--ring);border:0;
+  border-radius:28px;padding:22px 56px;display:flex;align-items:center;gap:20px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+#resume svg{width:1em;height:1em}
+.tw{animation:tw 5s ease-in-out infinite}
+@keyframes tw{50%{opacity:.25}}
+.zz{animation:zz 6s ease-in-out infinite}
+@keyframes zz{0%,100%{opacity:0;transform:translateY(10px)}40%,60%{opacity:.9;transform:none}}
+@media (prefers-reduced-motion:reduce){.tw,.zz{animation:none}}
 #grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;overflow-y:auto;align-content:start;
   padding:4px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .tile{font:inherit;color:#fff;border:0;border-radius:16px;padding:8px 8px 10px;display:flex;flex-direction:column;align-items:center;
@@ -62,14 +79,23 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
       <div id="shield"></div>
       <div id="veil"><div class="big" id="vbig"></div><div class="small" id="vsmall"></div></div>
     </div>
-    <div id="prog"><i></i></div><div id="ver">v9</div>
-    <div id="info">
-      <div><div id="chname">Pop TV</div><div id="vtitle">Getting ready…</div></div>
-      <button id="next" type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5l9 7-9 7zM12 5l9 7-9 7z"/></svg>10 sec</button>
+    <div id="prog"><i></i></div><div id="ver">v10</div>
+    <div id="info"><div id="chname">Pop TV</div><div id="vtitle">Getting ready…</div></div>
+    <div id="controls">
+      <button id="back" class="ctl" type="button"><svg viewBox="0 0 24 24"><path d="M21 5l-9 7 9 7zM12 5l-9 7 9 7z"/></svg>Back 10</button>
+      <button id="pause" class="ctl" type="button"><svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>Pause</button>
+      <button id="fwd" class="ctl" type="button"><svg viewBox="0 0 24 24"><path d="M3 5l9 7-9 7zM12 5l9 7-9 7z"/></svg>Ahead 10</button>
+      <button id="next" class="ctl off" type="button"><svg viewBox="0 0 24 24"><path d="M3 5l11 7-11 7zM16 5h4v14h-4z"/></svg>Next</button>
+      <div id="vol">
+        <button class="ctl" data-v="25" type="button"><svg viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3z"/></svg>Quiet</button>
+        <button class="ctl" data-v="60" type="button"><svg viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3z"/><path d="M15 9a4 4 0 0 1 0 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Normal</button>
+        <button class="ctl" data-v="100" type="button"><svg viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Loud</button>
+      </div>
     </div>
   </section>
   <nav id="grid"></nav>
 </main>
+<div id="sleep"><div class="msg">Resting. Tap to keep watching.</div><button id="resume" type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l15 8-15 8z"/></svg>Resume</button></div>
 
 <script>document.write('<script src="channels.js?'+Date.now()+'"><\/script>')</script>
 <script>
@@ -91,7 +117,7 @@ const CH=(window.POP_CHANNELS||[]).filter(c=>(c.videos&&c.videos.length)||(c.als
 const EVERY=window.POP_TOPUP_EVERY||3;
 const $=id=>document.getElementById(id);
 const DEBUG=/debug/.test(location.search+location.hash);
-const VER='v9';
+const VER='v10';
 /* Pick up new versions by itself: check every 15 minutes, reload between videos. */
 let updateReady=false;
 setInterval(()=>{fetch('index.html?'+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{
@@ -105,7 +131,7 @@ if(!(S.cur<CH.length))S.cur=0;
 const st=i=>S.ch[CH[i].name]||(S.ch[CH[i].name]={order:[],pos:0,since:0,pl:0,item:null,t:0});
 const bad=new Set();
 
-let player=null,ready=false,item=null,userPaused=false,everPlayed=false,adLikely=false,lastT=-1,lastMove=Date.now(),stuck=0,fails=0,loadedAt=0;
+let watched=0,player=null,ready=false,item=null,userPaused=false,everPlayed=false,adLikely=false,lastT=-1,lastMove=Date.now(),stuck=0,fails=0,loadedAt=0;
 
 /* ---------- picking what to play ---------- */
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -131,7 +157,7 @@ function nextItem(i){
 }
 function play(it,start){
   if(ready&&adLikely){setAd(false);pending=[it,start];makePlayer();return}
-  item=it;userPaused=false;stuck=0;unveil();setAd(false);lastT=-1;lastMove=Date.now();loadedAt=Date.now();
+  item=it;userPaused=false;watched=0;$('next').classList.add('off');stuck=0;unveil();hideSleep();setAd(false);lastT=-1;lastMove=Date.now();loadedAt=Date.now();
   const s=st(S.cur);s.item=it;s.t=start||0;save();
   $('vtitle').textContent='';
   if(!ready){pending=[it,start];return}
@@ -170,22 +196,65 @@ function veil(big,small,icon){
 }
 const unveil=()=>$('veil').classList.remove('on');
 function setAd(on){adLikely=on;$('shield').classList.toggle('ad',on)}
-function resume(){userPaused=false;unveil();try{bc&&bc.postMessage('playing-here')}catch(e){}try{player.playVideo()}catch(e){}}
+function resume(){userPaused=false;unveil();hideSleep();try{bc&&bc.postMessage('playing-here')}catch(e){}try{player.playVideo()}catch(e){}}
 
-$('shield').addEventListener('click',()=>{
+$('shield').addEventListener('click',()=>{   // the video itself only starts things; pausing is the Pause button
   if(!ready)return;
   const state=player.getPlayerState();
-  if(adLikely&&state===1)return;            // during an ad, only the Skip corner responds
-  if(!everPlayed||state!==1){resume();return}
-  player.pauseVideo();userPaused=true;veil('Paused','Tap to keep watching',PLAY);
+  if(!everPlayed||(state!==1&&!adLikely))resume();
 });
-/* Fast-forward 10 seconds within the same video (deliberately not "next video"). */
-$('next').addEventListener('click',()=>{
-  if(!ready||adLikely)return;
-  try{const t=player.getCurrentTime()||0,d=player.getDuration()||0;
-    if(d&&t+10>=d-1)return;              // near the end: let it finish naturally
-    player.seekTo(t+10,true)}catch(e){}
+const seek=d=>{if(!ready||adLikely)return;try{const t=player.getCurrentTime()||0,dur=player.getDuration()||0;
+  const to=Math.max(0,t+d);if(dur&&to>=dur-1)return;player.seekTo(to,true);lastT=to;lastMove=Date.now()}catch(e){}};
+$('back').addEventListener('click',()=>seek(-10));
+$('fwd').addEventListener('click',()=>seek(10));
+/* Next stays greyed out for the first 20 seconds of each video, so it can't become rapid flicking. */
+const NEXT_AFTER=20;
+$('next').addEventListener('click',()=>{if(ready&&!adLikely&&watched>=NEXT_AFTER)advance()});
+$('pause').addEventListener('click',()=>{
+  if(!ready)return;try{player.pauseVideo()}catch(e){}
+  remember();userPaused=true;showSleep();
 });
+$('sleep').addEventListener('click',()=>resume());
+
+/* ---------- volume ---------- */
+if(!S.vol)S.vol=60;
+function setVol(v){S.vol=v;save();
+  document.querySelectorAll('#vol .ctl').forEach(b=>b.classList.toggle('sel',+b.dataset.v===v));
+  if(ready){try{player.unMute();player.setVolume(v)}catch(e){}}}
+$('vol').addEventListener('click',e=>{const b=e.target.closest('.ctl');if(b)setVol(+b.dataset.v)});
+setVol(S.vol);
+
+/* ---------- sleep screen: a calm night scene for the channel, one big Resume ---------- */
+function sleepArt(c){
+  if(c.sleepImage)return `<img src="${esc(c.sleepImage)}" alt="">`;
+  let seed=[...c.name].reduce((a,ch)=>a*31+ch.charCodeAt(0)>>>0,7);
+  const rnd=()=>(seed=(seed*1103515245+12345)>>>0)/4294967296;
+  let stars='';
+  for(let k=0;k<90;k++){const x=rnd()*1600,y=rnd()*520,r=.8+rnd()*1.8;
+    stars+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r.toFixed(1)}"${k%4?'':' class="tw" style="animation-delay:'+(rnd()*5).toFixed(1)+'s"'}/>`}
+  const col=esc(c.color||'#445');
+  return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#05060f"/><stop offset=".55" stop-color="#0b1030"/><stop offset="1" stop-color="${col}"/></linearGradient>
+  <filter id="gl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <radialGradient id="mg"><stop offset="0" stop-color="#fff6d8" stop-opacity=".35"/><stop offset="1" stop-color="#fff6d8" stop-opacity="0"/></radialGradient></defs>
+  <rect width="1600" height="900" fill="url(#sk)"/>
+  <g fill="#fdf6e3">${stars}</g>
+  <circle cx="1300" cy="170" r="190" fill="url(#mg)"/>
+  <mask id="cr"><rect width="1600" height="900" fill="#fff"/><circle cx="1330" cy="150" r="64" fill="#000"/></mask><circle cx="1300" cy="170" r="70" fill="#f6edd0" mask="url(#cr)"/>
+  <path d="M0 720 Q300 640 620 700 T1220 690 T1600 680 V900 H0z" fill="#0a0c18" opacity=".85"/>
+  <path d="M0 790 Q420 730 820 780 T1600 760 V900 H0z" fill="#05060c"/>
+  <g transform="translate(672 110) scale(4)" fill="none" stroke="#ffd98a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#gl)" opacity=".95">${ICONS[c.icon]||ICONS.gear}</g>
+  <g fill="#ffe9b0" font-family="Georgia,serif" font-weight="700">
+    <text class="zz" x="935" y="160" font-size="44">z</text>
+    <text class="zz" x="975" y="120" font-size="56" style="animation-delay:1.2s">z</text>
+    <text class="zz" x="1025" y="80" font-size="70" style="animation-delay:2.4s">z</text></g>
+  </svg>`;
+}
+function showSleep(){
+  const el=$('sleep');el.querySelectorAll('svg:not(#resume svg),img').forEach(n=>{if(n.parentNode===el)n.remove()});
+  el.insertAdjacentHTML('afterbegin',sleepArt(CH[S.cur]));el.classList.add('on');
+}
+function hideSleep(){$('sleep').classList.remove('on')}
 
 /* ---------- channel tiles ---------- */
 function drawGrid(){
@@ -210,7 +279,7 @@ function makePlayer(){
     events:{
       onReady(){ready=true;if(pending){const[p,t]=pending;pending=null;play(p,t)}else tune(S.cur,true)},
       onStateChange(e){
-        if(e.data===1){everPlayed=true;fails=0;if(!userPaused)unveil();
+        if(e.data===1){everPlayed=true;fails=0;if(!userPaused)unveil();try{player.unMute();player.setVolume(S.vol)}catch(x){}
           const d=player.getVideoData&&player.getVideoData();if(d&&d.title)$('vtitle').textContent=d.title}
         if(e.data===0){advance()}
       },
@@ -246,7 +315,9 @@ setInterval(()=>{
   const ad=realAd||state===-1||state===3||state===5;   // anything that isn't the video itself playing
   if(DEBUG)$('ver').textContent=VER+'  state '+state+'  t '+t.toFixed(1)+'  ad '+ad+'  paused '+userPaused+'  '+innerWidth+'x'+innerHeight+'\n'+navigator.userAgent;
   if(ad!==adLikely)setAd(ad);
-  $('next').classList.toggle('off',ad);
+  if(moving&&state===1&&!realAd)watched+=Math.min(Math.abs(t-lastT),3);
+  $('next').classList.toggle('off',ad||watched<NEXT_AFTER);
+  $('back').classList.toggle('off',ad);$('fwd').classList.toggle('off',ad);
   if(realAd)$('prog').firstChild.style.width='0';
   if(moving){lastT=t;lastMove=Date.now();stuck=0;if(state===1||ad)unveil();
     if(Math.random()<0.2)remember();return}

@@ -7,8 +7,12 @@ recommendations, because Pop's taps never reach YouTube itself.
 
 What Pop can do:
 - Tap a tile: change channel.
-- Tap the video: pause. Tap again: keep watching.
-- Tap "10 sec": jump ahead ten seconds in the same video.
+- Back 10 / Ahead 10: jump within the video.
+- Pause: shows a calm night screen with one big Resume button (tapping anywhere resumes).
+- Next: another video on this channel. It stays greyed out for the first 20 seconds of each video,
+  so it can't turn into rapid flicking.
+- Quiet / Normal / Loud: volume. Keep the tablet's own volume high; these work within it.
+- Skip ad: YouTube's own button, bottom-right of the video, works during ads.
 
 What it does by itself:
 - Skips videos that are missing or that YouTube won't let us play.
@@ -35,7 +39,7 @@ channel's recent full-length uploads. A channel with only `alsoFrom` (like News)
 that channel's newest videos in order.
 
 To add a new channel, copy one `{ ... },` block and change the name, icon and colour.
-Icons available: logs, gear, train, plane, can, inn, music, news.
+Icons available: logs, gear, train, plane, can, book, gramophone, music, news.
 
 ## Hosting (free): GitHub Pages
 YouTube won't play inside a file opened straight from the tablet, so the two files need to live on a web address.
