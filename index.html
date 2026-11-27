@@ -61,7 +61,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
       <div id="shield"></div>
       <div id="veil"><div class="big" id="vbig"></div><div class="small" id="vsmall"></div></div>
     </div>
-    <div id="prog"><i></i></div><div id="ver">v7</div>
+    <div id="prog"><i></i></div><div id="ver">v8</div>
     <div id="info">
       <div><div id="chname">Pop TV</div><div id="vtitle">Getting ready…</div></div>
       <button id="next" type="button">Next
@@ -71,7 +71,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
   <nav id="grid"></nav>
 </main>
 
-<script src="channels.js"></script>
+<script>document.write('<script src="channels.js?'+Date.now()+'"><\/script>')</script>
 <script>
 {
 const ICONS={
@@ -91,6 +91,11 @@ const CH=(window.POP_CHANNELS||[]).filter(c=>(c.videos&&c.videos.length)||(c.als
 const EVERY=window.POP_TOPUP_EVERY||3;
 const $=id=>document.getElementById(id);
 const DEBUG=/debug/.test(location.search+location.hash);
+const VER='v8';
+/* Pick up new versions by itself: check every 15 minutes, reload between videos. */
+let updateReady=false;
+setInterval(()=>{fetch('index.html?'+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{
+  const m=t.match(/const VER='(v\d+)'/);if(m&&m[1]!==VER)updateReady=true}).catch(()=>{})},15*60000);
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
 let S={cur:0,ch:{}};
@@ -134,6 +139,7 @@ function play(it,start){
   else player.loadPlaylist({list:it.list,listType:'playlist',index:it.index,startSeconds:start||0});
 }
 function advance(){
+  if(updateReady){remember();location.reload();return}
   const it=nextItem(S.cur);
   if(it)return play(it,0);
   /* this channel has nothing playable: move on to the next one */
@@ -232,7 +238,7 @@ setInterval(()=>{
   const moving=Math.abs(t-lastT)>0.2;
   const realAd=(state===-1&&moving)||(state===1&&!moving&&everPlayed);
   const ad=realAd||state===-1||state===3||state===5;   // anything that isn't the video itself playing
-  if(DEBUG)$('ver').textContent='v7  state '+state+'  t '+t.toFixed(1)+'  ad '+ad+'  paused '+userPaused+'  '+innerWidth+'x'+innerHeight+'\n'+navigator.userAgent;
+  if(DEBUG)$('ver').textContent=VER+'  state '+state+'  t '+t.toFixed(1)+'  ad '+ad+'  paused '+userPaused+'  '+innerWidth+'x'+innerHeight+'\n'+navigator.userAgent;
   if(ad!==adLikely)setAd(ad);
   if(realAd)$('prog').firstChild.style.width='0';
   if(moving){lastT=t;lastMove=Date.now();stuck=0;if(state===1||ad)unveil();
