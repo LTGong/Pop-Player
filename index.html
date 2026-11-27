@@ -16,6 +16,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
 #screen{position:relative;width:100%;aspect-ratio:16/9;max-height:calc(100vh - 150px);background:#000;border-radius:10px;overflow:hidden;margin:0 auto}
 #yt,#yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 #shield{position:absolute;inset:0;z-index:2}
+#shield.ad{clip-path:polygon(0 0,100% 0,100% 62%,62% 62%,62% 100%,0 100%)}
 #veil{position:absolute;inset:0;z-index:3;display:none;align-items:center;justify-content:center;flex-direction:column;
   gap:18px;background:rgba(10,9,8,.72);text-align:center;padding:20px;pointer-events:none}
 #veil.on{display:flex}
@@ -94,7 +95,7 @@ if(!(S.cur<CH.length))S.cur=0;
 const st=i=>S.ch[CH[i].name]||(S.ch[CH[i].name]={order:[],pos:0,since:0,pl:0,item:null,t:0});
 const bad=new Set();
 
-let player=null,ready=false,item=null,userPaused=false,everPlayed=false,lastT=-1,lastMove=Date.now(),stuck=0,fails=0,loadedAt=0;
+let player=null,ready=false,item=null,userPaused=false,everPlayed=false,adLikely=false,lastT=-1,lastMove=Date.now(),stuck=0,fails=0,loadedAt=0;
 
 /* ---------- picking what to play ---------- */
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -119,7 +120,7 @@ function nextItem(i){
   return bad.has(id)?nextItem(i):{id};
 }
 function play(it,start){
-  item=it;userPaused=false;stuck=0;lastT=-1;lastMove=Date.now();loadedAt=Date.now();
+  item=it;userPaused=false;stuck=0;unveil();setAd(false);lastT=-1;lastMove=Date.now();loadedAt=Date.now();
   const s=st(S.cur);s.item=it;s.t=start||0;save();
   $('vtitle').textContent='';
   if(!ready)return;
@@ -156,11 +157,13 @@ function veil(big,small,icon){
   $('vsmall').textContent=small||'';$('veil').classList.add('on');
 }
 const unveil=()=>$('veil').classList.remove('on');
+function setAd(on){adLikely=on;$('shield').classList.toggle('ad',on)}
 function resume(){userPaused=false;unveil();try{player.playVideo()}catch(e){}}
 
 $('shield').addEventListener('click',()=>{
   if(!ready)return;
   const state=player.getPlayerState();
+  if(adLikely)return;                       // during an ad, only the Skip corner responds
   if(!everPlayed||state!==1){resume();return}
   player.pauseVideo();userPaused=true;veil('Paused','Tap to keep watching',PLAY);
 });
@@ -210,9 +213,11 @@ setInterval(()=>{
   const dur=(()=>{try{return player.getDuration()||0}catch(e){return 0}})();
   $('prog').firstChild.style.width=dur?Math.min(100,t/dur*100)+'%':'0';
   if(userPaused){lastMove=Date.now();return}
-  if(Math.abs(t-lastT)>0.2){lastT=t;lastMove=Date.now();stuck=0;if(state===1)unveil();
+  if(Math.abs(t-lastT)>0.2){lastT=t;lastMove=Date.now();stuck=0;if(adLikely)setAd(false);if(state===1)unveil();
     if(Math.random()<0.2)remember();return}
   const idle=Date.now()-lastMove;
+  /* "playing" but the video's clock isn't moving: almost always an ad. Open the Skip corner and wait it out. */
+  if(state===1&&idle>2500){setAd(true);unveil();if(idle<120000)return}
   if(!everPlayed&&idle>4000&&state!==3){veil('Tap here to start','',PLAY);return}  // tablet blocked autoplay with sound
   if(state===2&&idle>2000){resume();return}                          // paused by something other than Pop
   if(idle>25000){                                                     // frozen: retry once, then move on
@@ -225,6 +230,7 @@ window.addEventListener('online',()=>{unveil();if(ready&&item)play(currentItem()
 window.addEventListener('offline',()=>veil('Waiting for the internet','The picture will come back by itself'));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)remember()});
 window.addEventListener('pagehide',remember);
+window.__pop={get player(){return player},get state(){return{item,userPaused,everPlayed,adLikely,lastT,stuck}}};  // for debugging
 
 drawGrid();
 $('chname').textContent=CH.length?CH[S.cur].name:'No channels yet';

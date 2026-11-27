@@ -65,7 +65,6 @@ window.POP_CHANNELS = [
     color: "#3d4f6e",
     videos: [
       "Imw8L5p7mOk", // How a steam engine works (animated)
-      "kif0okz-EHM", // The invention that sparked the Industrial Revolution
       "U8E5LqpcrDg", // How piston steam engines work
       "IP1YxYKCt0U", // How a steam engine works, classic machinery
       "MxOrJOE9ZbY", // Industrial Revolution: James Watt
@@ -73,7 +72,6 @@ window.POP_CHANNELS = [
       "_Lw4kCURo9Y", // Will this 100 year old locomotive run?
       "nMHKvVypfYM", // Restoring a steam locomotive
       "CuAdoKlJ3sI", // The invention of the steam engine
-      "FNaIwws0DM8", // Steam engine explained simply
       "ulGUXsrdQ2Q", // Historic steam train back on track
       "6A6iS-PhDiU", // 1776: James Watt and the steam engine
     ],
@@ -117,9 +115,6 @@ window.POP_CHANNELS = [
     // Pop watches this genre rather than one channel. Add stories you spot him
     // enjoying here; Boots & Roses fills in every other video.
     videos: [
-      "HXuu8a9JwPI", // An old man walked in. They laughed.
-      "bi3PGRcJeHI", // They laughed when he walked into the saloon alone
-      "P1ZBWG47zbA", // A stranger bought every man a drink
       "xwdzuQ4sswc", // The hidden life of a medieval inn
       "A5Rzr4EaKKs", // The Tavern Knight (audiobook)
     ],
