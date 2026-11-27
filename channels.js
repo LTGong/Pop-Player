@@ -144,7 +144,6 @@ window.POP_CHANNELS = [
       "MIU49086kcU", // Love Is a Many Splendored Thing
       // Richard Crooks
       "X4TNiwoBubI", // The Song of Songs (1930)
-      "zqtoOT5o_fM", // Ah! Sweet Mystery of Life / The Song of Songs
       "zpII60yELmg", // Songs My Mother Taught Me
       "vM2Y-KdMccs", // The Holy City
       "l8jRkR58OuQ", // Selected recordings 1928-1939
@@ -170,15 +169,22 @@ window.POP_CHANNELS = [
       "36CCuBNf6Xg", // Core 'ngrato, Ed Sullivan Show
       "7kegl1hj5sA", // Core 'ngrato, Hollywood Palace 1964
       "4s36Al7ru_o", // Core 'ngrato
-      "cXbqzpjwIdg", // Romantic Italian Songs (1962)
+      "pbq7XIjBTao", // Core 'ngrato, Ed Sullivan Show (another)
+      "-DJuKxfu4Pk", // Serenata & A Man Without Love
+      "2vQvchBJnGY", // The Lord's Prayer
+      "T0IpEb01H-M", // And This Is My Beloved
+      "cvUKAh3aDsQ", // The Song of Santa Vittoria
+      // Il Volo
+      "dSmGMdKECbc", // O sole mio, Arena
+      "-4RE1L4E2tw", // O sole mio, Matera
+      // Mario Lanza
+      "5fEld8UNi60", // Torna a Surriento
+      "k3VCHP83Cvo", // Torna a Surriento, The Great Caruso
       // Gianluca Ginoble (Il Volo)
-      "GXkia-dXuAE", // Gianluca Ginoble
       "GtzMlOEZNDo", // Can't Help Falling in Love
-      "6TIAN2rN8mc", // Solo performance
       // Il Silenzio, Schlager Symphonica
       "mufSkxC-s3Q", // Il Silenzio, Enschede
       "rcecHtuNl3k", // Il Silenzio
-      "YE67L0vfgLU", // Il Silenzio, Enschede
     ],
   },
   {
