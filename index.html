@@ -25,7 +25,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
 #veil .small{font-size:clamp(18px,2.2vw,26px);color:var(--dim)}
 #veil svg{width:clamp(70px,10vw,130px);height:auto}
 #prog{height:8px;background:#2c2822;border-radius:4px;overflow:hidden}
-#ver{position:fixed;left:4px;bottom:2px;font-size:11px;color:#4a443b;pointer-events:none}
+#ver{position:fixed;left:6px;bottom:4px;font-size:13px;color:#8a8070;pointer-events:none;white-space:pre;z-index:9}
 #prog i{display:block;height:100%;width:0;background:var(--dim);transition:width 1s linear}
 #info{display:flex;align-items:center;gap:14px;margin-top:6px}
 #info>div{flex:1}
@@ -38,9 +38,9 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
 #next:active{transform:scale(.96)}
 #grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;overflow-y:auto;align-content:start;
   padding:4px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-.tile{font:inherit;color:#fff;border:0;border-radius:16px;padding:14px 8px 12px;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:8px;position:relative;height:max(150px,calc((100vh - 72px)/4));box-shadow:inset 0 -6px 0 rgba(0,0,0,.25);outline:5px solid transparent;outline-offset:-1px}
-.tile svg{width:clamp(56px,6vw,84px);height:auto;fill:none;stroke:#fff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.tile{font:inherit;color:#fff;border:0;border-radius:16px;padding:8px 8px 10px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:4px;position:relative;height:max(128px,calc((100vh - 28px - 12px*(var(--rows,4) - 1) - 8px)/var(--rows,4)));box-shadow:inset 0 -6px 0 rgba(0,0,0,.25);outline:5px solid transparent;outline-offset:-1px}
+.tile svg{flex:none;width:clamp(48px,5.4vw,76px);height:auto;fill:none;stroke:#fff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
 .tile b{font-size:clamp(20px,2.3vw,30px);line-height:1.05;text-align:center;text-shadow:0 2px 3px rgba(0,0,0,.35)}
 .tile.on{outline-color:var(--ring)}
 .tile.on::after{content:"Playing";position:absolute;top:8px;right:8px;font-size:16px;font-weight:700;background:var(--ring);color:#14120f;border-radius:20px;padding:2px 12px}
@@ -61,7 +61,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
       <div id="shield"></div>
       <div id="veil"><div class="big" id="vbig"></div><div class="small" id="vsmall"></div></div>
     </div>
-    <div id="prog"><i></i></div><div id="ver">v6</div>
+    <div id="prog"><i></i></div><div id="ver">v7</div>
     <div id="info">
       <div><div id="chname">Pop TV</div><div id="vtitle">Getting ready…</div></div>
       <button id="next" type="button">Next
@@ -81,6 +81,8 @@ const ICONS={
   plane:'<path d="M32 6v46M10 32l22-8 22 8M22 54l10-5 10 5M28 12a4 4 0 0 1 8 0"/>',
   can:'<ellipse cx="32" cy="14" rx="14" ry="5"/><path d="M18 14v36a14 5 0 0 0 28 0V14M28 12h8"/>',
   inn:'<path d="M14 20h26v30a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4zM40 26h7a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4h-7M14 20q1-9 13-7q12-2 13 7M22 30v16M32 30v16"/>',
+  book:'<path d="M32 16c-6-5-15-6-24-5v36c9-1 18 0 24 5c6-5 15-6 24-5V11c-9-1-18 0-24 5zM32 16v36M14 21c4 0 9 1 12 3M14 29c4 0 9 1 12 3M38 24c3-2 8-3 12-3M38 32c3-2 8-3 12-3"/>',
+  gramophone:'<rect x="8" y="44" width="30" height="12" rx="2"/><path d="M23 44v-8M23 36l10-6"/><path d="M30 31q12-6 16-22q12 10 8 26q-14 0-24-4z"/>',
   music:'<path d="M24 46V14l24-6v32"/><circle cx="18" cy="46" r="6"/><circle cx="42" cy="40" r="6"/>',
   news:'<rect x="8" y="12" width="40" height="40" rx="3"/><path d="M48 22h8v26a4 4 0 0 1-8 0M16 22h24M16 31h24M16 39h16"/>'
 };
@@ -88,6 +90,7 @@ const PLAY='<svg viewBox="0 0 24 24" fill="#fbf7ef"><path d="M7 4l14 8-14 8z"/><
 const CH=(window.POP_CHANNELS||[]).filter(c=>(c.videos&&c.videos.length)||(c.alsoFrom&&c.alsoFrom.length));
 const EVERY=window.POP_TOPUP_EVERY||3;
 const $=id=>document.getElementById(id);
+const DEBUG=/debug/.test(location.search+location.hash);
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
 let S={cur:0,ch:{}};
@@ -166,7 +169,7 @@ function resume(){userPaused=false;unveil();try{bc&&bc.postMessage('playing-here
 $('shield').addEventListener('click',()=>{
   if(!ready)return;
   const state=player.getPlayerState();
-  if(adLikely)return;                       // during an ad, only the Skip corner responds
+  if(adLikely&&state===1)return;            // during an ad, only the Skip corner responds
   if(!everPlayed||state!==1){resume();return}
   player.pauseVideo();userPaused=true;veil('Paused','Tap to keep watching',PLAY);
 });
@@ -227,15 +230,17 @@ setInterval(()=>{
   if(userPaused){lastMove=Date.now();return}
   /* During an ad YouTube reports "unstarted" while the clock (the ad's) runs. Open the Skip corner then. */
   const moving=Math.abs(t-lastT)>0.2;
-  const ad=(state===-1&&moving)||(state===1&&!moving&&everPlayed)||(state===3&&Date.now()-lastMove>4000);
+  const realAd=(state===-1&&moving)||(state===1&&!moving&&everPlayed);
+  const ad=realAd||state===-1||state===3||state===5;   // anything that isn't the video itself playing
+  if(DEBUG)$('ver').textContent='v7  state '+state+'  t '+t.toFixed(1)+'  ad '+ad+'  paused '+userPaused+'  '+innerWidth+'x'+innerHeight+'\n'+navigator.userAgent;
   if(ad!==adLikely)setAd(ad);
-  if(ad)$('prog').firstChild.style.width='0';
+  if(realAd)$('prog').firstChild.style.width='0';
   if(moving){lastT=t;lastMove=Date.now();stuck=0;if(state===1||ad)unveil();
     if(Math.random()<0.2)remember();return}
   const idle=Date.now()-lastMove;
   if(!everPlayed&&idle>4000&&state!==3){veil('Tap here to start','',PLAY);return}  // tablet blocked autoplay with sound
   if(state===2&&idle>2000){resume();return}                          // paused by something other than Pop
-  if(idle>(adLikely?90000:25000)){                                                     // frozen: retry once, then move on
+  if(idle>(realAd?90000:25000)){                                                     // frozen: retry once, then move on
     lastMove=Date.now();stuck++;
     if(stuck===1&&item)play(item,t);else advance();
   }
@@ -257,6 +262,7 @@ try{bc=new BroadcastChannel('popTV');bc.onmessage=()=>{
 window.addEventListener('pagehide',remember);
 window.__pop={get player(){return player},get state(){return{item,userPaused,everPlayed,adLikely,lastT,stuck}}};  // for debugging
 
+document.documentElement.style.setProperty('--rows',Math.min(5,Math.max(3,Math.ceil(CH.length/2))));
 drawGrid();
 $('chname').textContent=CH.length?CH[S.cur].name:'No channels yet';
 }

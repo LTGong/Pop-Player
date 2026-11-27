@@ -4,7 +4,7 @@
 //
 //  Each channel has:
 //    name    — the big bold label on the tile (keep it short)
-//    icon    — one of: logs, gear, train, plane, can, inn, music, news
+//    icon    — one of: logs, gear, train, plane, can, book, gramophone, music, news
 //    color   — tile colour (any CSS colour)
 //    videos  — YouTube video IDs. The ID is the part after "v=" in a
 //              link like https://www.youtube.com/watch?v=hUhisi2FBuw
@@ -110,7 +110,7 @@ window.POP_CHANNELS = [
   },
   {
     name: "Inn stories",
-    icon: "inn",
+    icon: "book",
     color: "#7a3b3b",
     // Pop watches this genre rather than one channel. Add stories you spot him
     // enjoying here; Boots & Roses fills in every other video.
@@ -124,14 +124,61 @@ window.POP_CHANNELS = [
     topupEvery: 1, // alternate: one hand-picked, one from alsoFrom
   },
   {
-    name: "Old music",
-    icon: "music",
+    name: "Old songs",
+    icon: "gramophone",
     color: "#5b4a7a",
     videos: [
-      "ALU66mO-39o", // 1 hour of Glenn Miller
-      "aME0qvhZ37o", // In the Mood
-      "4rMja1JBIVc", // Chattanooga Choo Choo, 1941
-      "7ulNsLvKJ4o", // Pennsylvania 6-5000
+      // Henry Burr
+      "a6vp2y9_v-M", // Just a Baby's Prayer at Twilight (1918)
+      "1AtWopzbZ1Y", // When You're a Long, Long Way From Home (1914)
+      "0nE6C9Qo2Rc", // In the Valley of the Moon (with Helen Clark)
+      "0EPQAlmkBVE", // Peg o' My Heart (1913)
+      "iUzQk0AwAEY", // The Song That Stole My Heart Away (1914)
+      "N7WLp-91hFw", // You Broke My Heart to Pass the Time Away (1914)
+      "6DlM3S6tMYY", // Last Night Was the End of the World (1913)
+      "-5klh5crsQ4", // Peerless Quartet: On the Old Dominion Line
+      "P7ck0TRLTn0", // Stanley Kirkby: It's a Long Way to Tipperary (1915)
+      // Arthur Tracy, the Street Singer
+      "MxXdveIm8XY", // Red Sails in the Sunset (1935)
+      "OqU7CXsGqf0", // Marta
+      "MIU49086kcU", // Love Is a Many Splendored Thing
+      // Richard Crooks
+      "X4TNiwoBubI", // The Song of Songs (1930)
+      "zqtoOT5o_fM", // Ah! Sweet Mystery of Life / The Song of Songs
+      "zpII60yELmg", // Songs My Mother Taught Me
+      "vM2Y-KdMccs", // The Holy City
+      "l8jRkR58OuQ", // Selected recordings 1928-1939
+      "QTadHRFiqE8", // I'm Falling in Love with Someone (1929)
+      // Victor Herbert
+      "Sl7ky68e5ME", // Moonbeams (1906)
+      "qzBt1OAStNw", // Moonbeams, a serenade (The Red Mill)
+      "Swv8bVHSNfg", // Victor Herbert melodies, The Red Mill (1939)
+      "gRd4HGIhfp8", // Selections from The Red Mill
+      // John McDermott, John McCormack
+      "pdpvZTx1vvY", // Mary of Argyle
+      "dIwTBqlHMU4", // Mary of Argyle, live 2023
+      "nyx4-LPSPWQ", // Mother Machree
+      "104AqKrSMKw", // John McCormack: Bonnie Mary of Argyle
+    ],
+  },
+  {
+    name: "Italian songs",
+    icon: "music",
+    color: "#2e5d4b",
+    videos: [
+      // Sergio Franchi
+      "36CCuBNf6Xg", // Core 'ngrato, Ed Sullivan Show
+      "7kegl1hj5sA", // Core 'ngrato, Hollywood Palace 1964
+      "4s36Al7ru_o", // Core 'ngrato
+      "cXbqzpjwIdg", // Romantic Italian Songs (1962)
+      // Gianluca Ginoble (Il Volo)
+      "GXkia-dXuAE", // Gianluca Ginoble
+      "GtzMlOEZNDo", // Can't Help Falling in Love
+      "6TIAN2rN8mc", // Solo performance
+      // Il Silenzio, Schlager Symphonica
+      "mufSkxC-s3Q", // Il Silenzio, Enschede
+      "rcecHtuNl3k", // Il Silenzio
+      "YE67L0vfgLU", // Il Silenzio, Enschede
     ],
   },
   {
