@@ -61,7 +61,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
       <div id="shield"></div>
       <div id="veil"><div class="big" id="vbig"></div><div class="small" id="vsmall"></div></div>
     </div>
-    <div id="prog"><i></i></div><div id="ver">v5</div>
+    <div id="prog"><i></i></div><div id="ver">v6</div>
     <div id="info">
       <div><div id="chname">Pop TV</div><div id="vtitle">Getting ready…</div></div>
       <button id="next" type="button">Next
@@ -122,10 +122,11 @@ function nextItem(i){
   return bad.has(id)?nextItem(i):{id};
 }
 function play(it,start){
+  if(ready&&adLikely){setAd(false);pending=[it,start];makePlayer();return}
   item=it;userPaused=false;stuck=0;unveil();setAd(false);lastT=-1;lastMove=Date.now();loadedAt=Date.now();
   const s=st(S.cur);s.item=it;s.t=start||0;save();
   $('vtitle').textContent='';
-  if(!ready)return;
+  if(!ready){pending=[it,start];return}
   if(it.id)player.loadVideoById({videoId:it.id,startSeconds:start||0});
   else player.loadPlaylist({list:it.list,listType:'playlist',index:it.index,startSeconds:start||0});
 }
@@ -180,12 +181,19 @@ function drawGrid(){
 $('grid').addEventListener('click',e=>{const b=e.target.closest('.tile');if(b)tune(+b.dataset.i)});
 
 /* ---------- YouTube player ---------- */
-window.onYouTubeIframeAPIReady=()=>{
+/* One player only. Changing video mid-ad can leave the ad's sound running inside YouTube's
+   player, so in that case the player is thrown away and rebuilt, which silences everything. */
+let pending=null;
+function makePlayer(){
+  ready=false;
+  if(player){try{player.destroy()}catch(e){}player=null}
+  $('screen').querySelectorAll('iframe').forEach(f=>f.remove());
+  if(!$('yt')){const d=document.createElement('div');d.id='yt';$('screen').prepend(d)}
   player=new YT.Player('yt',{
     width:'100%',height:'100%',
     playerVars:{autoplay:1,controls:0,disablekb:1,fs:0,iv_load_policy:3,rel:0,playsinline:1,modestbranding:1,cc_load_policy:0},
     events:{
-      onReady(){ready=true;tune(S.cur,true)},
+      onReady(){ready=true;if(pending){const[p,t]=pending;pending=null;play(p,t)}else tune(S.cur,true)},
       onStateChange(e){
         if(e.data===1){everPlayed=true;fails=0;if(!userPaused)unveil();
           const d=player.getVideoData&&player.getVideoData();if(d&&d.title)$('vtitle').textContent=d.title}
@@ -199,7 +207,8 @@ window.onYouTubeIframeAPIReady=()=>{
       }
     }
   });
-};
+}
+window.onYouTubeIframeAPIReady=makePlayer;
 function loadAPI(){const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s)}
 loadAPI();
 
