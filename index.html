@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#14120f">
+<title>Pop TV</title>
+<style>
+:root{--bg:#14120f;--ink:#fbf7ef;--dim:#cfc6b6;--ring:#ffd35a}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hidden;
+  font-family:Roboto,"Amazon Ember","Helvetica Neue",Arial,sans-serif;-webkit-user-select:none;user-select:none}
+#app{display:grid;grid-template-columns:minmax(0,62fr) minmax(0,38fr);height:100%;gap:14px;padding:14px}
+#left{display:flex;flex-direction:column;gap:10px;justify-content:center}
+#screen{position:relative;width:100%;aspect-ratio:16/9;max-height:calc(100vh - 150px);background:#000;border-radius:10px;overflow:hidden;margin:0 auto}
+#yt,#yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+#shield{position:absolute;inset:0;z-index:2}
+#veil{position:absolute;inset:0;z-index:3;display:none;align-items:center;justify-content:center;flex-direction:column;
+  gap:18px;background:rgba(10,9,8,.72);text-align:center;padding:20px;pointer-events:none}
+#veil.on{display:flex}
+#veil .big{font-size:clamp(28px,4.2vw,52px);font-weight:800;line-height:1.1}
+#veil .small{font-size:clamp(18px,2.2vw,26px);color:var(--dim)}
+#veil svg{width:clamp(70px,10vw,130px);height:auto}
+#prog{height:8px;background:#2c2822;border-radius:4px;overflow:hidden}
+#prog i{display:block;height:100%;width:0;background:var(--dim);transition:width 1s linear}
+#info{display:flex;align-items:center;gap:14px;margin-top:6px}
+#info>div{flex:1}
+#chname{font-size:clamp(22px,2.6vw,34px);font-weight:800;line-height:1.1}
+#vtitle{font-size:clamp(16px,1.8vw,22px);color:var(--dim);line-height:1.25;margin-top:4px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#next{flex:none;font:inherit;font-size:clamp(20px,2.2vw,28px);font-weight:800;color:var(--bg);background:var(--ink);
+  border:0;border-radius:14px;padding:16px 22px;min-height:72px;display:flex;align-items:center;gap:10px}
+#next svg{width:34px;height:34px}
+#next:active{transform:scale(.96)}
+#grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;overflow-y:auto;align-content:start;
+  padding:4px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.tile{font:inherit;color:#fff;border:0;border-radius:16px;padding:14px 8px 12px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:8px;position:relative;height:max(150px,calc((100vh - 72px)/4));box-shadow:inset 0 -6px 0 rgba(0,0,0,.25);outline:5px solid transparent;outline-offset:-1px}
+.tile svg{width:clamp(56px,6vw,84px);height:auto;fill:none;stroke:#fff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.tile b{font-size:clamp(20px,2.3vw,30px);line-height:1.05;text-align:center;text-shadow:0 2px 3px rgba(0,0,0,.35)}
+.tile.on{outline-color:var(--ring)}
+.tile.on::after{content:"Playing";position:absolute;top:8px;right:8px;font-size:16px;font-weight:700;background:var(--ring);color:#14120f;border-radius:20px;padding:2px 12px}
+.tile:active{transform:scale(.97)}
+@media (orientation:portrait){
+  #app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
+  #screen{max-height:none}
+  .tile{height:160px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app">
+  <section id="left">
+    <div id="screen">
+      <div id="yt"></div>
+      <div id="shield"></div>
+      <div id="veil"><div class="big" id="vbig"></div><div class="small" id="vsmall"></div></div>
+    </div>
+    <div id="prog"><i></i></div>
+    <div id="info">
+      <div><div id="chname">Pop TV</div><div id="vtitle">Getting ready…</div></div>
+      <button id="next" type="button">Next
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5l9 7-9 7zM12 5l9 7-9 7z"/></svg></button>
+    </div>
+  </section>
+  <nav id="grid"></nav>
+</main>
+
+<script src="channels.js"></script>
+<script>
+{
+const ICONS={
+  logs:'<circle cx="24" cy="40" r="15"/><circle cx="24" cy="40" r="8"/><circle cx="24" cy="40" r="1.5"/><path d="M38 8l18 18M47 17L36 28a9 9 0 0 0 12 3"/>',
+  gear:'<circle cx="32" cy="32" r="19" stroke-width="9" stroke-linecap="butt" stroke-dasharray="7.46 7.46"/><circle cx="32" cy="32" r="14"/><circle cx="32" cy="32" r="5"/>',
+  train:'<path d="M6 46h52M10 46V28h22v18M32 34h18v12M38 34V24h8v10M14 28v-8h10v8M44 18q4-8 12-6"/><circle cx="17" cy="51" r="5"/><circle cx="40" cy="51" r="5"/><circle cx="52" cy="52" r="3"/>',
+  plane:'<path d="M32 6v46M10 32l22-8 22 8M22 54l10-5 10 5M28 12a4 4 0 0 1 8 0"/>',
+  can:'<ellipse cx="32" cy="14" rx="14" ry="5"/><path d="M18 14v36a14 5 0 0 0 28 0V14M28 12h8"/>',
+  inn:'<path d="M14 20h26v30a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4zM40 26h7a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4h-7M14 20q1-9 13-7q12-2 13 7M22 30v16M32 30v16"/>',
+  music:'<path d="M24 46V14l24-6v32"/><circle cx="18" cy="46" r="6"/><circle cx="42" cy="40" r="6"/>',
+  news:'<rect x="8" y="12" width="40" height="40" rx="3"/><path d="M48 22h8v26a4 4 0 0 1-8 0M16 22h24M16 31h24M16 39h16"/>'
+};
+const PLAY='<svg viewBox="0 0 24 24" fill="#fbf7ef"><path d="M7 4l14 8-14 8z"/></svg>';
+const CH=(window.POP_CHANNELS||[]).filter(c=>(c.videos&&c.videos.length)||(c.alsoFrom&&c.alsoFrom.length));
+const EVERY=window.POP_TOPUP_EVERY||3;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+let S={cur:0,ch:{}};
+try{const s=JSON.parse(localStorage.getItem('popTV')||'null');if(s&&s.ch)S=s}catch(e){}
+const save=()=>{try{localStorage.setItem('popTV',JSON.stringify(S))}catch(e){}};
+if(!(S.cur<CH.length))S.cur=0;
+const st=i=>S.ch[CH[i].name]||(S.ch[CH[i].name]={order:[],pos:0,since:0,pl:0,item:null,t:0});
+const bad=new Set();
+
+let player=null,ready=false,item=null,userPaused=false,everPlayed=false,lastT=-1,lastMove=Date.now(),stuck=0,fails=0,loadedAt=0;
+
+/* ---------- picking what to play ---------- */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function nextItem(i){
+  const c=CH[i],s=st(i),vids=(c.videos||[]).filter(v=>!bad.has(v));
+  const from=c.alsoFrom||[];
+  if(from.length&&(!vids.length||s.since>=(c.topupEvery||EVERY))){
+    s.since=0;
+    const ch=from[Math.floor(Math.random()*from.length)];
+    const list='UULF'+ch.slice(2);           // channel's full-length uploads, newest first, no Shorts
+    if(!vids.length){const idx=s.pl||0;s.pl=(idx+1)%40;return{list,index:idx}}
+    return{list,index:Math.floor(Math.random()*15)};
+  }
+  if(!vids.length)return null;
+  if(s.pos>=s.order.length||!s.order.length){
+    const last=s.order[s.order.length-1];
+    s.order=shuffle(vids);
+    if(s.order.length>1&&s.order[0]===last)s.order.push(s.order.shift());
+    s.pos=0;
+  }
+  const id=s.order[s.pos++];s.since++;
+  return bad.has(id)?nextItem(i):{id};
+}
+function play(it,start){
+  item=it;userPaused=false;stuck=0;lastT=-1;lastMove=Date.now();loadedAt=Date.now();
+  const s=st(S.cur);s.item=it;s.t=start||0;save();
+  $('vtitle').textContent='';
+  if(!ready)return;
+  if(it.id)player.loadVideoById({videoId:it.id,startSeconds:start||0});
+  else player.loadPlaylist({list:it.list,listType:'playlist',index:it.index,startSeconds:start||0});
+}
+function advance(){
+  const it=nextItem(S.cur);
+  if(it)return play(it,0);
+  /* this channel has nothing playable: move on to the next one */
+  tune((S.cur+1)%CH.length,true);
+}
+function tune(i,force){
+  if(i===S.cur&&!force){if(userPaused)resume();return}
+  remember();
+  S.cur=i;save();drawGrid();
+  $('chname').textContent=CH[i].name;
+  const s=st(i);
+  if(s.item&&!(s.item.id&&bad.has(s.item.id)))play(s.item,Math.max(0,(s.t||0)-3));
+  else advance();
+}
+function remember(){
+  if(!ready||!item)return;
+  try{const t=player.getCurrentTime();const s=st(S.cur);s.item=currentItem();s.t=t||0;save()}catch(e){}
+}
+function currentItem(){
+  if(item&&item.list){try{const i=player.getPlaylistIndex();if(i>=0)return{list:item.list,index:i}}catch(e){}}
+  return item;
+}
+
+/* ---------- screen messages ---------- */
+function veil(big,small,icon){
+  $('vbig').innerHTML=(icon||'')+'<div>'+esc(big)+'</div>';
+  $('vsmall').textContent=small||'';$('veil').classList.add('on');
+}
+const unveil=()=>$('veil').classList.remove('on');
+function resume(){userPaused=false;unveil();try{player.playVideo()}catch(e){}}
+
+$('shield').addEventListener('click',()=>{
+  if(!ready)return;
+  const state=player.getPlayerState();
+  if(!everPlayed||state!==1){resume();return}
+  player.pauseVideo();userPaused=true;veil('Paused','Tap to keep watching',PLAY);
+});
+$('next').addEventListener('click',()=>{if(ready)advance()});
+
+/* ---------- channel tiles ---------- */
+function drawGrid(){
+  $('grid').innerHTML=CH.map((c,i)=>
+    `<button class="tile${i===S.cur?' on':''}" data-i="${i}" type="button" style="background:${esc(c.color||'#444')}">
+      <svg viewBox="0 0 64 64">${ICONS[c.icon]||ICONS.gear}</svg><b>${esc(c.name)}</b></button>`).join('');
+}
+$('grid').addEventListener('click',e=>{const b=e.target.closest('.tile');if(b)tune(+b.dataset.i)});
+
+/* ---------- YouTube player ---------- */
+window.onYouTubeIframeAPIReady=()=>{
+  player=new YT.Player('yt',{
+    width:'100%',height:'100%',
+    playerVars:{autoplay:1,controls:0,disablekb:1,fs:0,iv_load_policy:3,rel:0,playsinline:1,modestbranding:1,cc_load_policy:0},
+    events:{
+      onReady(){ready=true;tune(S.cur,true)},
+      onStateChange(e){
+        if(e.data===1){everPlayed=true;fails=0;if(!userPaused)unveil();
+          const d=player.getVideoData&&player.getVideoData();if(d&&d.title)$('vtitle').textContent=d.title}
+        if(e.data===0){advance()}
+      },
+      onError(){
+        fails++;
+        if(item&&item.id)bad.add(item.id);
+        if(fails>12){veil('One moment…','Pop TV is looking for something to play');fails=0;setTimeout(advance,30000);return}
+        setTimeout(advance,600);
+      }
+    }
+  });
+};
+function loadAPI(){const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s)}
+loadAPI();
+
+/* ---------- watchdog: keeps things moving on its own ---------- */
+setInterval(()=>{
+  if(!navigator.onLine){veil('Waiting for the internet','The picture will come back by itself');return}
+  if(!ready){
+    if(Date.now()-loadedAt>45000&&Date.now()>startAt+45000)location.reload();
+    return;
+  }
+  let t=0,state=-1;
+  try{t=player.getCurrentTime()||0;state=player.getPlayerState()}catch(e){}
+  const dur=(()=>{try{return player.getDuration()||0}catch(e){return 0}})();
+  $('prog').firstChild.style.width=dur?Math.min(100,t/dur*100)+'%':'0';
+  if(userPaused){lastMove=Date.now();return}
+  if(Math.abs(t-lastT)>0.2){lastT=t;lastMove=Date.now();stuck=0;if(state===1)unveil();
+    if(Math.random()<0.2)remember();return}
+  const idle=Date.now()-lastMove;
+  if(!everPlayed&&idle>4000&&state!==3){veil('Tap here to start','',PLAY);return}  // tablet blocked autoplay with sound
+  if(state===2&&idle>2000){resume();return}                          // paused by something other than Pop
+  if(idle>25000){                                                     // frozen: retry once, then move on
+    lastMove=Date.now();stuck++;
+    if(stuck===1&&item)play(item,t);else advance();
+  }
+},2000);
+const startAt=Date.now();
+window.addEventListener('online',()=>{unveil();if(ready&&item)play(currentItem(),Math.max(0,lastT-2));else location.reload()});
+window.addEventListener('offline',()=>veil('Waiting for the internet','The picture will come back by itself'));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)remember()});
+window.addEventListener('pagehide',remember);
+
+drawGrid();
+$('chname').textContent=CH.length?CH[S.cur].name:'No channels yet';
+}
+</script>
+</body>
+</html>
