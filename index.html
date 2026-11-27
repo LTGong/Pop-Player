@@ -143,7 +143,7 @@ function tune(i,force){
   else advance();
 }
 function remember(){
-  if(!ready||!item)return;
+  if(!ready||!item||adLikely)return;
   try{const t=player.getCurrentTime();const s=st(S.cur);s.item=currentItem();s.t=t||0;save()}catch(e){}
 }
 function currentItem(){
@@ -213,11 +213,13 @@ setInterval(()=>{
   const dur=(()=>{try{return player.getDuration()||0}catch(e){return 0}})();
   $('prog').firstChild.style.width=dur?Math.min(100,t/dur*100)+'%':'0';
   if(userPaused){lastMove=Date.now();return}
-  if(Math.abs(t-lastT)>0.2){lastT=t;lastMove=Date.now();stuck=0;if(adLikely)setAd(false);if(state===1)unveil();
+  /* During an ad YouTube reports "unstarted" while the clock (the ad's) runs. Open the Skip corner then. */
+  const ad=state===-1&&Math.abs(t-lastT)>0.2;
+  if(ad!==adLikely)setAd(ad);
+  if(ad)$('prog').firstChild.style.width='0';
+  if(Math.abs(t-lastT)>0.2){lastT=t;lastMove=Date.now();stuck=0;if(state===1||ad)unveil();
     if(Math.random()<0.2)remember();return}
   const idle=Date.now()-lastMove;
-  /* "playing" but the video's clock isn't moving: almost always an ad. Open the Skip corner and wait it out. */
-  if(state===1&&idle>2500){setAd(true);unveil();if(idle<120000)return}
   if(!everPlayed&&idle>4000&&state!==3){veil('Tap here to start','',PLAY);return}  // tablet blocked autoplay with sound
   if(state===2&&idle>2000){resume();return}                          // paused by something other than Pop
   if(idle>25000){                                                     // frozen: retry once, then move on
