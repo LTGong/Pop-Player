@@ -8,7 +8,7 @@ recommendations, because Pop's taps never reach YouTube itself.
 What Pop can do:
 - Tap a tile: change channel.
 - Tap the video: pause. Tap again: keep watching.
-- Tap "Next": skip to another video on this channel.
+- Tap "10 sec": jump ahead ten seconds in the same video.
 
 What it does by itself:
 - Skips videos that are missing or that YouTube won't let us play.

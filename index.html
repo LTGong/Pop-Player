@@ -36,6 +36,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
   border:0;border-radius:14px;padding:16px 22px;min-height:72px;display:flex;align-items:center;gap:10px}
 #next svg{width:34px;height:34px}
 #next:active{transform:scale(.96)}
+#next.off{opacity:.35}
 #grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;overflow-y:auto;align-content:start;
   padding:4px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .tile{font:inherit;color:#fff;border:0;border-radius:16px;padding:8px 8px 10px;display:flex;flex-direction:column;align-items:center;
@@ -61,11 +62,10 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
       <div id="shield"></div>
       <div id="veil"><div class="big" id="vbig"></div><div class="small" id="vsmall"></div></div>
     </div>
-    <div id="prog"><i></i></div><div id="ver">v8</div>
+    <div id="prog"><i></i></div><div id="ver">v9</div>
     <div id="info">
       <div><div id="chname">Pop TV</div><div id="vtitle">Getting ready…</div></div>
-      <button id="next" type="button">Next
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5l9 7-9 7zM12 5l9 7-9 7z"/></svg></button>
+      <button id="next" type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5l9 7-9 7zM12 5l9 7-9 7z"/></svg>10 sec</button>
     </div>
   </section>
   <nav id="grid"></nav>
@@ -91,7 +91,7 @@ const CH=(window.POP_CHANNELS||[]).filter(c=>(c.videos&&c.videos.length)||(c.als
 const EVERY=window.POP_TOPUP_EVERY||3;
 const $=id=>document.getElementById(id);
 const DEBUG=/debug/.test(location.search+location.hash);
-const VER='v8';
+const VER='v9';
 /* Pick up new versions by itself: check every 15 minutes, reload between videos. */
 let updateReady=false;
 setInterval(()=>{fetch('index.html?'+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{
@@ -179,7 +179,13 @@ $('shield').addEventListener('click',()=>{
   if(!everPlayed||state!==1){resume();return}
   player.pauseVideo();userPaused=true;veil('Paused','Tap to keep watching',PLAY);
 });
-$('next').addEventListener('click',()=>{if(ready)advance()});
+/* Fast-forward 10 seconds within the same video (deliberately not "next video"). */
+$('next').addEventListener('click',()=>{
+  if(!ready||adLikely)return;
+  try{const t=player.getCurrentTime()||0,d=player.getDuration()||0;
+    if(d&&t+10>=d-1)return;              // near the end: let it finish naturally
+    player.seekTo(t+10,true)}catch(e){}
+});
 
 /* ---------- channel tiles ---------- */
 function drawGrid(){
@@ -240,6 +246,7 @@ setInterval(()=>{
   const ad=realAd||state===-1||state===3||state===5;   // anything that isn't the video itself playing
   if(DEBUG)$('ver').textContent=VER+'  state '+state+'  t '+t.toFixed(1)+'  ad '+ad+'  paused '+userPaused+'  '+innerWidth+'x'+innerHeight+'\n'+navigator.userAgent;
   if(ad!==adLikely)setAd(ad);
+  $('next').classList.toggle('off',ad);
   if(realAd)$('prog').firstChild.style.width='0';
   if(moving){lastT=t;lastMove=Date.now();stuck=0;if(state===1||ad)unveil();
     if(Math.random()<0.2)remember();return}
