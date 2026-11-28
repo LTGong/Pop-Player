@@ -10,8 +10,6 @@
 //              link like https://www.youtube.com/watch?v=hUhisi2FBuw
 //              Write each one in quotes, followed by a comma.
 //              Anything after // on a line is a note for you; Pop never sees it.
-//    sleepImage (optional) — a picture (web address) to show when Pop pauses.
-//              Without one, Pop TV draws a night scene with the channel's icon.
 //    alsoFrom (optional) — YouTube channel IDs (start with "UC").
 //              After every few hand-picked videos, Pop TV plays a recent
 //              full-length upload from one of these channels (never Shorts).

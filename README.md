@@ -6,13 +6,17 @@ Videos play one after another forever. There are no YouTube menus, Shorts or
 recommendations, because Pop's taps never reach YouTube itself.
 
 What Pop can do:
-- Tap a tile: change channel.
+- Tap a tile: change channel. Each channel picks up where it left off.
+- Tap the video, or the Pause button: pause and play. The channels stay on screen.
+- Previous: go back to the video before (where he left it).
 - Back 10 / Ahead 10: jump within the video.
-- Pause: shows a calm night screen with one big Resume button (tapping anywhere resumes).
-- Next: another video on this channel. It stays greyed out for the first 20 seconds of each video,
+- Next: another video on this channel. Greyed out for the first 20 seconds of each new video,
   so it can't turn into rapid flicking.
 - Quiet / Normal / Loud: volume. Keep the tablet's own volume high; these work within it.
-- Skip ad: YouTube's own button, bottom-right of the video, works during ads.
+- Skip ad: YouTube's own button, bottom-right of the video, during ads.
+
+Checking for updates: the small grey text in the bottom-left shows the version and when the page
+last loaded. A new version is picked up within about 15 minutes, at the next video or channel change.
 
 What it does by itself:
 - Skips videos that are missing or that YouTube won't let us play.
