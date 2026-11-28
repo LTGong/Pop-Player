@@ -16,7 +16,7 @@ What Pop can do:
 - Skip ad: YouTube's own button, bottom-right of the video, during ads.
 
 Checking for updates: the small grey text in the bottom-left shows the version and when the page
-last loaded. A new version is picked up within about 15 minutes, at the next video or channel change.
+last loaded. A new version is picked up within about 5 minutes, at the next video or channel change.
 
 What it does by itself:
 - Skips videos that are missing or that YouTube won't let us play.

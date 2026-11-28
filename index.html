@@ -66,7 +66,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hi
       <div id="shield"></div>
       <div id="veil"><div class="big" id="vbig"></div><div class="small" id="vsmall"></div></div>
     </div>
-    <div id="prog"><i></i></div><div id="ver">v11</div>
+    <div id="prog"><i></i></div><div id="ver">v12</div>
     <div id="info"><div id="chname">Pop TV</div><div id="vtitle">Getting ready…</div></div>
     <div id="controls">
       <button id="prev" class="ctl off" type="button"><svg viewBox="0 0 24 24"><path d="M4 5h4v14H4zM21 5L10 12l11 7z"/></svg>Previous</button>
@@ -104,11 +104,11 @@ const CH=(window.POP_CHANNELS||[]).filter(c=>(c.videos&&c.videos.length)||(c.als
 const EVERY=window.POP_TOPUP_EVERY||3;
 const $=id=>document.getElementById(id);
 const DEBUG=/debug/.test(location.search+location.hash);
-const VER='v11';
-/* Pick up new versions by itself: check every 15 minutes, reload between videos. */
+const VER='v12';
+/* Pick up new versions by itself: check every 5 minutes, reload between videos. */
 let updateReady=false;
 setInterval(()=>{fetch('index.html?'+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{
-  const m=t.match(/const VER='(v\d+)'/);if(m&&m[1]!==VER)updateReady=true}).catch(()=>{})},15*60000);
+  const m=t.match(/const VER='(v\d+)'/);if(m&&m[1]!==VER)updateReady=true}).catch(()=>{})},5*60000);
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
 let S={cur:0,ch:{}};
